@@ -94,7 +94,6 @@ const Form = () => {
 
   const handleSend = async (data) => {
     try {
-      console.log(data);
       await axios.post(`${API_URL}/dishes`, data).then((res) => {
         console.log(res);
         alertify.success('Sent successfully');
