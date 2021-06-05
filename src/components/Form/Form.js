@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import * as yup from 'yup';
+import timeToString from '../../utils/Date';
 
 const FormWrapper = styled.form`
   display: flex;
@@ -63,6 +64,8 @@ const schema = yup.object().shape({
 });
 
 const Form = () => {
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [types, setTypes] = useState('');
   const [pizza, setPizza] = useState(false);
@@ -72,6 +75,7 @@ const Form = () => {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
@@ -82,18 +86,20 @@ const Form = () => {
 
     setSelectedDate(null);
     setTypes('');
+    setValue('preparation_time', null, {
+      shouldValidate: false,
+    });
     reset();
   };
 
   const handleSend = async (data) => {
     try {
-      await axios
-        .post(`https://frosty-wood-6558.getsandbox.com:443/dishes`, data )
-        .then((res) => {
-          console.log(res);
-          alertify.success('Sent successfully');
-          resetFields();
-        });
+      console.log(data);
+      await axios.post(`${API_URL}/dishes`, data).then((res) => {
+        console.log(res);
+        alertify.success('Sent successfully');
+        resetFields();
+      });
     } catch (err) {
       alertify.alert('Error', err.message, () => {
         alertify.error('Something went wrong');
@@ -143,7 +149,12 @@ const Form = () => {
         format="HH:mm:ss"
         label="Preparation time"
         value={selectedDate}
-        onChange={setSelectedDate}
+        onChange={(newValue) => {
+          setSelectedDate(newValue);
+          setValue('preparation_time', timeToString(newValue), {
+            shouldValidate: true,
+          });
+        }}
         InputProps={{ ...register('preparation_time') }}
         error={!!errors.preparation_time}
         helperText={errors.preparation_time?.message}
