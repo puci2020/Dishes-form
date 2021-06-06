@@ -26,3 +26,6 @@ Install dependencies
 Run local server
 
 `npm start` or `yarn start`
+
+The application should start on the address
+`http://localhost:3000`
