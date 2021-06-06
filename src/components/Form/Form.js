@@ -99,8 +99,6 @@ const Form = () => {
     reset();
   };
 
-  const getSpiciness = (value) => console.log(value);
-
   const handleSend = async (data) => {
     try {
       await axios.post(`${API_URL}/dishes`, data).then((res) => {
