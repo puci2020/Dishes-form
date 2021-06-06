@@ -1,5 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, MenuItem, TextField } from '@material-ui/core';
+import {
+  Button,
+  MenuItem,
+  Slider,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import { TimePicker } from '@material-ui/pickers';
 import alertify from 'alertifyjs';
 import axios from 'axios';
@@ -76,6 +82,7 @@ const Form = () => {
     handleSubmit,
     reset,
     setValue,
+    unregister,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
@@ -91,6 +98,8 @@ const Form = () => {
     });
     reset();
   };
+
+  const getSpiciness = (value) => console.log(value);
 
   const handleSend = async (data) => {
     try {
@@ -111,17 +120,25 @@ const Form = () => {
       setPizza(true);
       setSoup(false);
       setSandwich(false);
+      unregister('spiciness_scale');
+      unregister('slices_of_bread');
     }
     if (types === 'soup') {
       setPizza(false);
       setSoup(true);
       setSandwich(false);
+      unregister('no_of_slices');
+      unregister('diameter');
+      unregister('slices_of_bread');
     }
 
     if (types === 'sandwich') {
       setPizza(false);
       setSoup(false);
       setSandwich(true);
+      unregister('no_of_slices');
+      unregister('diameter');
+      unregister('spiciness_scale');
     }
   }, [types]);
 
@@ -212,21 +229,25 @@ const Form = () => {
         </>
       ) : null}
       {soup ? (
-        <TextField
-          className="customField"
-          InputLabelProps={{
-            className: 'field',
-          }}
-          style={{ overflow: 'hidden' }}
-          label="Spiciness scale"
-          error={!!errors.spiciness_scale}
-          helperText={errors.spiciness_scale?.message}
-          inputProps={{
-            type: 'number',
-            step: 1,
-            ...register('spiciness_scale'),
-          }}
-        />
+        <>
+          <Typography
+            id="discrete-slider-small-steps"
+            className="customField"
+            gutterBottom
+          >
+            Spiciness scale
+          </Typography>
+          <Slider
+            defaultValue={1}
+            getAriaValueText={(value) => setValue('spiciness_scale', value)}
+            aria-labelledby="discrete-slider-small-steps"
+            step={1}
+            marks
+            min={1}
+            max={10}
+            valueLabelDisplay="auto"
+          />
+        </>
       ) : null}
       {sandwich ? (
         <TextField
